@@ -38,9 +38,6 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Make artisan executable
 RUN chmod +x artisan
 
-# Copy the environment file only if it exists
-COPY .env ./.env
-
 # Generate Laravel App Key if .env exists
 RUN if [ -f .env ]; then php artisan key:generate; else echo "Skipping key generation (ensure .env is configured)"; fi
 

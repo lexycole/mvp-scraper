@@ -26,7 +26,16 @@ RUN a2enmod rewrite
 # Set PHP production configurations
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Set working directory
+# Copy the custom Apache configuration file
+COPY apache.conf /etc/apache2/conf-available/servername.conf
+RUN a2enconf servername
+
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
+# Update the Apache configuration files to use the correct DocumentRoot
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
 WORKDIR /var/www/html
 
 # Copy all necessary Laravel files from the previous stage
@@ -46,3 +55,6 @@ EXPOSE 80
 
 # Set user to www-data for security
 USER www-data
+
+# Run Apache in the foreground
+CMD ["apache2-foreground"]

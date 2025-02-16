@@ -53,4 +53,4 @@ EXPOSE 80
 
 USER www-data
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php artisan migrate --force && apache2-foreground"]
